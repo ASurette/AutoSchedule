@@ -7,11 +7,48 @@ and open the template in the editor.
 <html>
     <head>
         <script src="https://apis.google.com/js/platform.js" async defer></script>
-        <meta name="google-signin-client_id" content="XXXXXXXX.apps.googleusercontent.com">
+        <meta name="google-signin-client_id" content="252843144180-f2hveniegnamogh2komir2asnvh6p3uo.apps.googleusercontent.com">
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
     <body>
         <div class="g-signin2" data-onsuccess="onSignIn"></div>
+        <a href="#" onclick="signOut();">Sign out</a>
+        <script>
+            function signOut() {
+            var auth2 = gapi.auth2.getAuthInstance();
+            auth2.signOut().then(function () {
+            console.log('User signed out.');
+             });
+            }
+        </script>
+        <form>
+            <p>Do want a schedule for a day or a week?</p>
+            <div>               
+              <input type="radio" id="daychoice" name="schedulelength" value="day" onclick="scheduletimechosen()">              
+              <label for="daychoice">Day</label>
+              
+              <input type="radio" id="weekchoice" name="schedulelength" value="week" onclick="scheduletimechosen()">
+              <label for="weekchoice">Week</label>             
+            </div>
+
+        </form>
+        <div id="schedulechoice">Test words</div>
+        <script>
+            function scheduletimechosen(){
+                var x = document.getElementById("daychoice").value;
+                var y = document.getElementById("weekchoice").value;
+                if(x == TRUE){
+                    document.getElementById("schedulechoice").innerhtml = 'Create a day schedule';
+                }
+                if(y == TRUE){
+                    document.getElementById("schedulechoice").innerhtml = 'Create a week schedule';                
+                }
+                else{
+                    document.getElementById("schedulechoice").innerhtml = 'not working';
+                }
+            }
+        </script>
+        
     </body>
 </html>
