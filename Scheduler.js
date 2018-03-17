@@ -66,6 +66,10 @@ function array_creator(start_of_day, end_of_day, busy_time_array){
 
     var busy_array = Array.apply(null, Array(96)).map(Number.prototype.valueOf,0);
 
+
+    //NEED TO FIX THE CASE WHERE END OF DAY IS BEFORE START OF DAY
+
+
     array_placement_start = array_position_calculation(start_of_day);
 
     array_placement_end = array_position_calculation(end_of_day);
@@ -152,19 +156,21 @@ function ScheduleAlgorithm(day_or_week, busy_time_array, events_array, start_of_
         //event should be touching at least 1 non-0, this way you don't waste potential time by putting a large event
         // in the middle of a time block then can't fit a smaller event around it
 
-        var potential_array = [0];//array where we will be putting potential places for events
-
         number_of_events = events_array.length;
 
         for(i = 0; i < number_of_events; i++)//for all of the events
         {
+            var potential_array = [0];//array where we will be putting potential places for events
 
             for(j = 0; j < 96; j++)//loop through the schedule and look for an empty space
             {
                 //need to fix the edge case where j=0
-                if((schedule[j] == 0) && schedule[j-1] != 0 ){//if there is an empty space and the previous space isn't empty
-                                                             //this is to spend less time looping through unnecessarily
-                                                             //and to make sure we optimize the amount of space the algo has to work with
+
+                //if there is an empty space and the previous space isn't empty
+                //this is to spend less time looping through unnecessarily
+                //and to make sure we optimize the amount of space the algo has to work with
+
+                if((schedule[j] == 0) && schedule[j-1] != 0){
 
                     var is_space = true;//this value if for the next part to see if there is a continuous string of 0's
 
@@ -182,7 +188,7 @@ function ScheduleAlgorithm(day_or_week, busy_time_array, events_array, start_of_
 
                     if(is_space == true)//if we find a spot where we can fit the event save it in an array
                     {
-                        if(potential_array.length == 1)
+                        if(potential_array.length == 1 && potential_array[0] == 0)
                         {
                             potential_array[0] = j;
                         }
@@ -202,24 +208,10 @@ function ScheduleAlgorithm(day_or_week, busy_time_array, events_array, start_of_
 
                 return('There is no space for this event:');
 
-            }/*
-            else if(potential_array.length == 1 && potential_array[0] != 0)//if only one space was found put it in there
-            {
-
-                for(l = 0; l < Number(events_array[i].time_length) / 15; l++ )
-                {
-                    schedule[potential_array[1]+i] = events_array[i].name;
-                }
-
-            }*/
+            }
             else
             {
-                console.log('Event name is : ', events_array[i]);
-                console.log(potential_array.length);
-
                 var rng = Math.floor(Math.random() * potential_array.length);//way to chose a random space in the schedule
-
-                console.log(rng);
 
                 number_of_spaces = Number(events_array[i].time_length)/15;//how many spaces the event fills in the schedule
 
@@ -229,11 +221,9 @@ function ScheduleAlgorithm(day_or_week, busy_time_array, events_array, start_of_
                 }
 
             }
-
+            console.log(schedule)
         }
-
         return(schedule);
-
 }
 
 var day_or_week = 0;
@@ -246,18 +236,20 @@ var busy2 = new BusyTime('B', '105', '1630');
 
 var busy3 = new BusyTime('C', '180', '1830');
 
-var BTA = [busy1, busy2];
+var BTA = [busy1, busy2, busy3];
 
-var event1 = new Event('E1', '90');
+var event1 = new Event('90', '90');
 
-var event2 = new Event('E2', '30');
+var event2 = new Event('30', '30');
 
-var event3 = new Event('E3', '15');
+var event3 = new Event('15A', '15');
 
-var event4 = new Event('E4', '15');
+var event4 = new Event('15B', '15');
 
-var event5 = new Event('E5', '45');
+var event5 = new Event('45', '45');
 
 var events_array = [event1, event2, event3, event4, event5];
 
-console.log(ScheduleAlgorithm(day_or_week, BTA, events_array, start_of_day, end_of_day));
+ScheduleAlgorithm(day_or_week, BTA, events_array, start_of_day, end_of_day);
+
+//console.log(ScheduleAlgorithm(day_or_week, BTA, events_array, start_of_day, end_of_day));
