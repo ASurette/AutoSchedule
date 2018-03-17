@@ -121,8 +121,6 @@ function ScheduleAlgorithm(day_or_week, busy_time_array, events_array, start_of_
             }
         }
 
-        console.log('total free time is', total_free_time);
-
         number_events = events_array.length;
 
         total_event_time = 0;
@@ -138,15 +136,13 @@ function ScheduleAlgorithm(day_or_week, busy_time_array, events_array, start_of_
 
         }
 
-        console.log('total event time is', total_event_time);
-
         if(total_free_time < total_event_time){
             return('There is not enough time in the day for all of your events.')
         }
 
         var schedule = busy_array;//make a copy in case we need the busy array untouched for something later
 
-        bubbleSort(schedule);//this bubblesort sorts high to low, this is because I want to find space for the large time commitments since they will fit in less spaces as events are placed
+        bubbleSort(events_array);//this bubblesort sorts high to low, this is because I want to find space for the large time commitments since they will fit in less spaces as events are placed
 
         //loop through the schedule and look for a 0, then see if there are enough 0 behind that 0 to place the current event in there
         //once you find a spot replace enough 0 with that event name
@@ -156,12 +152,16 @@ function ScheduleAlgorithm(day_or_week, busy_time_array, events_array, start_of_
         //event should be touching at least 1 non-0, this way you don't waste potential time by putting a large event
         // in the middle of a time block then can't fit a smaller event around it
 
-        var potential_array = [0];
+        var potential_array = [0];//array where we will be putting potential places for events
 
-        for(i = 0; i < events_array.length; i++)//for all of the events
+        number_of_events = events_array.length;
+
+        for(i = 0; i < number_of_events; i++)//for all of the events
         {
+
             for(j = 0; j < 96; j++)//loop through the schedule and look for an empty space
             {
+                //need to fix the edge case where j=0
                 if((schedule[j] == 0) && schedule[j-1] != 0 ){//if there is an empty space and the previous space isn't empty
                                                              //this is to spend less time looping through unnecessarily
                                                              //and to make sure we optimize the amount of space the algo has to work with
@@ -170,7 +170,10 @@ function ScheduleAlgorithm(day_or_week, busy_time_array, events_array, start_of_
 
                     for(k = 0; k < (Number(events_array[i].time_length) / 15); k++)//loop through for how long the event lasts
                     {
-                        if(schedule[k] != 0)//if at any point there is no empty space then we can't use that 0
+                        if(k+j > 95){
+                            is_space = false; //if k+j is > 95 that means we can't place the event there
+                        }
+                        else if(schedule[k+j] != 0)//if at any point there is no empty space then we can't use that 0
                         {
                             is_space = false;
                         }
@@ -197,27 +200,32 @@ function ScheduleAlgorithm(day_or_week, busy_time_array, events_array, start_of_
             if(potential_array[0] == 0)//if no valid spaces were found
             {
 
-                return('There is no space for this event:', events_array[i].name);
+                return('There is no space for this event:');
 
-            }
+            }/*
             else if(potential_array.length == 1 && potential_array[0] != 0)//if only one space was found put it in there
             {
 
-                for(i = 0; i < Number(events_array[potential_array[1]].time_length) / 15; i++ )
+                for(l = 0; l < Number(events_array[i].time_length) / 15; l++ )
                 {
-                    schedule[potential_array[1]+i] = events_array[potential_array[1]].name;
+                    schedule[potential_array[1]+i] = events_array[i].name;
                 }
 
-            }
+            }*/
             else
             {
-                //i don't think this works figure it out later
+                console.log('Event name is : ', events_array[i]);
+                console.log(potential_array.length);
 
-                Math.floor(Math.random() * potential_array.length);
+                var rng = Math.floor(Math.random() * potential_array.length);//way to chose a random space in the schedule
 
-                for(i = 0; i < Number(events_array[potential_array[1]].time_length) / 15; i++ )
+                console.log(rng);
+
+                number_of_spaces = Number(events_array[i].time_length)/15;//how many spaces the event fills in the schedule
+
+                for(m = 0; m < number_of_spaces; m++)
                 {
-                    schedule[potential_array[1]+i] = events_array[potential_array[1]].name;
+                    schedule[potential_array[rng]+m] = events_array[i].name;
                 }
 
             }
@@ -251,9 +259,5 @@ var event4 = new Event('E4', '15');
 var event5 = new Event('E5', '45');
 
 var events_array = [event1, event2, event3, event4, event5];
-
-bubbleSort(events_array);
-
-console.log(events_array);
 
 console.log(ScheduleAlgorithm(day_or_week, BTA, events_array, start_of_day, end_of_day));
