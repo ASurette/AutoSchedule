@@ -51,7 +51,7 @@ function fill_busy_array(busy_array, busy_time_array){
 
         for(j = start_position-1; j < (start_position+time_ticks); j++){
 
-            busy_array[j] = 'B';//mark it busy
+            busy_array[j] = busy_time_array[i].name;//mark it busy
 
         }
 
@@ -77,14 +77,14 @@ function array_creator(start_of_day, end_of_day, busy_time_array){
     for(i = 0; i < array_placement_start; i++)
     {
 
-        busy_array[i] = 'B';//set all the values until they start their day as busy
+        busy_array[i] = 'Sleeping';//set all the values until they start their day as busy
 
     }
 
     for(i = array_placement_end; i < 96; i++)
     {
 
-        busy_array[i] = 'B'//the the values of when the user goes to sleep to busy
+        busy_array[i] = 'Sleeping'//the the values of when the user goes to sleep to busy
 
     }
 
@@ -221,35 +221,33 @@ function ScheduleAlgorithm(day_or_week, busy_time_array, events_array, start_of_
                 }
 
             }
-            console.log(schedule)
+
         }
         return(schedule);
 }
 
 var day_or_week = 0;
 var start_of_day = '0900';
-var end_of_day = '2200';
+var end_of_day = '2300';
 
-var busy1 = new BusyTime('A', '75', '1230');
+var busy1 = new BusyTime('Math', '75', '1230');
 
-var busy2 = new BusyTime('B', '105', '1630');
+var busy2 = new BusyTime('Science', '105', '1630');
 
-var busy3 = new BusyTime('C', '180', '1830');
+var busy3 = new BusyTime('Coding', '180', '1830');
 
 var BTA = [busy1, busy2, busy3];
 
-var event1 = new Event('90', '90');
+var event1 = new Event('Laundry', '90');
 
-var event2 = new Event('30', '30');
+var event2 = new Event('Clean', '30');
 
-var event3 = new Event('15A', '15');
+var event3 = new Event('Work Out', '30');
 
-var event4 = new Event('15B', '15');
+var event4 = new Event('Homework', '60');
 
-var event5 = new Event('45', '45');
+var events_array = [event1, event2, event3, event4];
 
-var events_array = [event1, event2, event3, event4, event5];
+//ScheduleAlgorithm(day_or_week, BTA, events_array, start_of_day, end_of_day);
 
-ScheduleAlgorithm(day_or_week, BTA, events_array, start_of_day, end_of_day);
-
-//console.log(ScheduleAlgorithm(day_or_week, BTA, events_array, start_of_day, end_of_day));
+console.log(ScheduleAlgorithm(day_or_week, BTA, events_array, start_of_day, end_of_day));
