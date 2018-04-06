@@ -138,7 +138,9 @@ function event_create() {
 }
 
 //this is what is going to get all the data from the user input
-function data_collector() {
+function busy_data_collector() {
+
+    var temp_busy_array = []
 
     //loop through all the inputs for each busy event and create a BusyTime out of them
     for(i = 0; i < busy_count; i++)
@@ -150,32 +152,52 @@ function data_collector() {
 
         var time_length = document.getElementById("duration"+i).value;
 
+        var temp_day_of_week = -1;
+
         //need to run the time length and start time through some sort of value checker to make sure it is okay
         //could do it when the user types the stuff in so by this point I know it will be the correct type
 
         //if we are doing a week instead of a day
-        if(document.getElementById("day_week_select").value == 1)
+        if(localStorage.getItem("day_or_week") == 1)
         {
 
-        }
-        //if only doing a day we don't want to search for something that doesn't exist
-        else
-        {
+            temp_day_of_week = document.getElementById("day_of_week"+i).value;
 
         }
+
+        temp_busy_array.push(name);
+
+        temp_busy_array.push(start_time);
+
+        temp_busy_array.push(time_length);
+
+        temp_busy_array.push(temp_day_of_week);
 
     }
 
-    //get data for the events the user wants to do
+    document.getElementById("test").innerHTML = temp_busy_array;
 
-    for(j = 0; j < event_count; j++)
+}
+
+function event_data_collector() {
+
+    var temp_event_array = []
+
+    //loop through all the inputs for each busy event and create a BusyTime out of them
+    for(i = 0; i < event_count; i++)
     {
 
-        var event_name = document.getElementById("event_input"+j).value;
+        var name = document.getElementById("event_input"+i).value;
 
-        var event_duration = document.getElementById("event_duration"+j).value;
+        var time_length = document.getElementById("event_duration"+i).value;
+
+        temp_busy_array.push(name);
+
+        temp_busy_array.push(time_length);
 
     }
+
+    document.getElementById("test").innerHTML = temp_event_array;
 
 }
 
