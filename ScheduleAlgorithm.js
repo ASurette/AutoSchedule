@@ -152,6 +152,8 @@ function busy_data_collector() {
 
         var time_length = document.getElementById("duration"+i).value;
 
+        time_length = (Math.ceil(time_length/15)) * 15;
+
         var temp_day_of_week = -1;
 
         //need to run the time length and start time through some sort of value checker to make sure it is okay
@@ -181,19 +183,21 @@ function busy_data_collector() {
 
 function event_data_collector() {
 
-    var temp_event_array = []
+    var temp_event_array = [];
 
     //loop through all the inputs for each busy event and create a BusyTime out of them
-    for(i = 0; i < event_count; i++)
+    for(j = 0; j < event_count; j++)
     {
 
-        var name = document.getElementById("event_input"+i).value;
+        var event_name = document.getElementById("event_input"+j).value;
 
-        var time_length = document.getElementById("event_duration"+i).value;
+        var event_duration = document.getElementById("event_duration"+j).value;
 
-        temp_busy_array.push(name);
+        event_duration = (Math.ceil(event_duration/15)) * 15;
 
-        temp_busy_array.push(time_length);
+        temp_event_array.push(event_name);
+
+        temp_event_array.push(event_duration);
 
     }
 
