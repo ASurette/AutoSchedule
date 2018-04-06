@@ -2,28 +2,185 @@
 //setting up classes for events and times when the user is busy, they will be in their own arrays and will be used
 //to fill out the array
 class Event{
-    constructor(name, time_length){
+    constructor(name, time_length, day){
         this.name = name;
 
         this.time_length = time_length
+
+        this.day = day;
 
     }
 }
 
 class BusyTime{
-    constructor(name, time_length, start_time){
+    constructor(name, time_length, start_time, day){
         this.name = name;//name of the event
 
         this.time_length = time_length;//in minutes
 
         this.start_time = start_time;//in 24hr clock as a 4 digit string so 0000 or 1315
 
+        this.day = day;
+
     }
 }
 
+var busy_count = 0;//a variable used to check how many busy event have been made, used to keep track of the created html elements for user inpur
+
+var event_count = 0;//a variable to check how many events have been created
+
+//creates the elements needed to add and delete busy times
+function busy_create() {
+
+    var div = document.getElementById("busy_create");
+
+    //label to ask the user for the name of event
+    var label = document.createElement("label");
+    label.textContent = "Name of busy event: "
+    div.appendChild(label);
+
+    //set up the input to get the name of the busy event
+    var input = document.createElement("input");
+    input.setAttribute("type", "text");
+    input.id = "busy_input" + busy_count;
+
+    div.appendChild(input);
+
+    if (localStorage.getItem("day_or_week") == 1)
+    {
+        //label to ask the user what day of the week
+        var label2 = document.createElement("label");
+        label2.textContent = "Day of the week event takes place on: "
+        div.appendChild(label2);
+
+        //add a select for the user to select the day of the week the busy event is on
+        var select1 = document.createElement("select");
+        select1.id = "day_of_week" + busy_count;
+        day_of_week_array_values = [0, 1, 2, 3, 4, 5, 6];
+        day_of_week_array_text = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        div.appendChild(select1);
+
+        //add the options to the selection
+        for (var i = 0; i < day_of_week_array_text.length; i++) {
+            var option = document.createElement("option");
+            option.value = day_of_week_array_values[i];
+            option.text = day_of_week_array_text[i];
+            select1.appendChild(option);
+        }
+
+    }
+
+    //label to give the user info
+    var label3 = document.createElement("label");
+    label3.textContent = "When does the event start? ";
+    div.appendChild(label3);
+
+    //add an input for what time the busy event starts at
+    var input2 = document.createElement("input");
+    input2.id = "start_time"+busy_count;
+    input2.setAttribute("placeholder", "HH:MM");
+
+    div.appendChild(input2);
+
+    //label to give the user info
+    var label4 = document.createElement("label");
+    label4.textContent = "Duration of event "
+    div.appendChild(label4);
+
+    //add an input for how long the busy event lasts
+    var input3 = document.createElement("input");
+    input3.id = "duration"+busy_count;
+    input3.setAttribute("placeholder", "Time in minutes");
+
+    div.appendChild(input3);
+
+    linebreak = document.createElement("br");
+    div.appendChild(linebreak);
+
+    busy_count++;
+
+}
+
+function event_create() {
+
+    var div = document.getElementById("event_create");
+
+    //label to ask name of event
+    var label = document.createElement("label");
+    label.textContent = "Name of task: "
+    div.appendChild(label);
+
+    //set up the input to get the name of the event
+    var input = document.createElement("input");
+    input.setAttribute("type", "text");
+    input.id = "event_input" + event_count;
+
+    div.appendChild(input);
+
+    //label to ask duration of event
+    var label2 = document.createElement("label");
+    label2.textContent = "How long you think the task will take: "
+    div.appendChild(label2);
+
+    //add an input for how long the event lasts
+    var input2 = document.createElement("input");
+    input2.id = "event_duration"+event_count;
+    input2.setAttribute("placeholder", "Time in minutes");
+
+    div.appendChild(input2);
+
+    //create a linebreak to make it look nicer
+    linebreak = document.createElement("br");
+    div.appendChild(linebreak);
+
+    event_count++;
+
+}
+
+//this is what is going to get all the data from the user input
+function data_collector() {
+
+    //loop through all the inputs for each busy event and create a BusyTime out of them
+    for(i = 0; i < busy_count; i++)
+    {
+
+        var name = document.getElementById("busy_input"+i).value;
+
+        var start_time = document.getElementById("start_time"+i).value;
+
+        var time_length = document.getElementById("duration"+i).value;
+
+        //need to run the time length and start time through some sort of value checker to make sure it is okay
+        //could do it when the user types the stuff in so by this point I know it will be the correct type
+
+        //if we are doing a week instead of a day
+        if(document.getElementById("day_week_select").value == 1)
+        {
+
+        }
+        //if only doing a day we don't want to search for something that doesn't exist
+        else
+        {
+
+        }
+
+    }
+
+    //get data for the events the user wants to do
+
+    for(j = 0; j < event_count; j++)
+    {
+
+        var event_name = document.getElementById("event_input"+j).value;
+
+        var event_duration = document.getElementById("event_duration"+j).value;
+
+    }
+
+}
+
 //Takes the time as a string and calculates where it should be in the array
-function array_position_calculation(hour)
-{
+function array_position_calculation(hour) {
 
    hours_in_minutes = (Number(hour[0] * 10) + Number(hour[1])) * 60;
 
@@ -66,9 +223,7 @@ function array_creator(start_of_day, end_of_day, busy_time_array){
 
     var busy_array = Array.apply(null, Array(96)).map(Number.prototype.valueOf,0);
 
-
     //NEED TO FIX THE CASE WHERE END OF DAY IS BEFORE START OF DAY
-
 
     array_placement_start = array_position_calculation(start_of_day);
 
@@ -93,7 +248,7 @@ function array_creator(start_of_day, end_of_day, busy_time_array){
     return busy_array;
 }
 
-//insertion sort I found onlien at http://khan4019.github.io/front-end-Interview-Questions/sort.html
+//insertion sort I found online at http://khan4019.github.io/front-end-Interview-Questions/sort.html
 function bubbleSort(arr){
     var len = arr.length;
     for (var i = len-1; i>=0; i--){
@@ -108,10 +263,25 @@ function bubbleSort(arr){
     return arr;
 }
 
-function ScheduleAlgorithm(day_or_week, busy_time_array, events_array, start_of_day, end_of_day) {
+function ScheduleAlgorithm(busy_time_array, events_array) {
 
+//-----------------Data Set Up-----------------------------------
+//this section sets up the data for the day/week schedule, when the day starts and when the day ends
+        data_collector();
+
+        day_or_week = sessionStorage.getItem("day_or_week");
+
+        start_of_day = sessionStorage.getItem("start_day");
+
+        end_of_day = sessionStorage.getItem("end_day");
+
+//-----------------Start Algorithm------------------------------
+// -------------------------------------------------------------
+
+        //create the busy array
         var busy_array = array_creator(start_of_day, end_of_day, busy_time_array);
 
+        //set up a variable that will calculate how much time the user has in the day/week
         var total_free_time = 0;
 
         //loop through the busy array to see how much time they have in total
@@ -170,7 +340,7 @@ function ScheduleAlgorithm(day_or_week, busy_time_array, events_array, start_of_
                 //this is to spend less time looping through unnecessarily
                 //and to make sure we optimize the amount of space the algo has to work with
 
-                if((schedule[j] == 0) && schedule[j-1] != 0){
+                if(( (schedule[j] == 0) && schedule[j-1] != 0)){
 
                     var is_space = true;//this value if for the next part to see if there is a continuous string of 0's
 
@@ -225,29 +395,3 @@ function ScheduleAlgorithm(day_or_week, busy_time_array, events_array, start_of_
         }
         return(schedule);
 }
-
-var day_or_week = 0;
-var start_of_day = '0900';
-var end_of_day = '2300';
-
-var busy1 = new BusyTime('Math', '75', '1230');
-
-var busy2 = new BusyTime('Science', '105', '1630');
-
-var busy3 = new BusyTime('Coding', '180', '1830');
-
-var BTA = [busy1, busy2, busy3];
-
-var event1 = new Event('Laundry', '90');
-
-var event2 = new Event('Clean', '30');
-
-var event3 = new Event('Work Out', '30');
-
-var event4 = new Event('Homework', '60');
-
-var events_array = [event1, event2, event3, event4];
-
-//ScheduleAlgorithm(day_or_week, BTA, events_array, start_of_day, end_of_day);
-
-console.log(ScheduleAlgorithm(day_or_week, BTA, events_array, start_of_day, end_of_day));
