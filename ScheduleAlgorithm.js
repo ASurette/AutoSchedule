@@ -2,12 +2,10 @@
 //setting up classes for events and times when the user is busy, they will be in their own arrays and will be used
 //to fill out the array
 class Event{
-    constructor(name, time_length, day){
+    constructor(name, time_length){
         this.name = name;
 
         this.time_length = time_length
-
-        this.day = day;
 
     }
 }
@@ -99,6 +97,8 @@ function busy_create() {
 
     busy_count++;
 
+    localStorage.setItem("busy_count", busy_count);
+
 }
 
 function event_create() {
@@ -135,6 +135,8 @@ function event_create() {
 
     event_count++;
 
+    localStorage.setItem("event_count", event_count);
+
 }
 
 //this is what is going to get all the data from the user input
@@ -146,15 +148,17 @@ function busy_data_collector() {
     for(i = 0; i < busy_count; i++)
     {
 
-        var name = document.getElementById("busy_input"+i).value;
+        localStorage.setItem( "busy_input"+i, document.getElementById("busy_input"+i).value);
 
-        var start_time = document.getElementById("start_time"+i).value;
+        localStorage.setItem( "busy_start_time"+i, document.getElementById("start_time"+i).value);
 
         var time_length = document.getElementById("duration"+i).value;
 
         time_length = (Math.ceil(time_length/15)) * 15;
 
-        var temp_day_of_week = -1;
+        localStorage.setItem("busy_duration"+i, time_length);
+
+        var temp_day_of_week = -1;//use -1 to represent that it is a daily schedule so we don't care about the day
 
         //need to run the time length and start time through some sort of value checker to make sure it is okay
         //could do it when the user types the stuff in so by this point I know it will be the correct type
@@ -167,41 +171,28 @@ function busy_data_collector() {
 
         }
 
-        temp_busy_array.push(name);
-
-        temp_busy_array.push(start_time);
-
-        temp_busy_array.push(time_length);
-
-        temp_busy_array.push(temp_day_of_week);
+        localStorage.setItem("busy_day_of_week"+i, temp_day_of_week)
 
     }
-
-    document.getElementById("test").innerHTML = temp_busy_array;
 
 }
 
 function event_data_collector() {
 
-    var temp_event_array = [];
-
-    //loop through all the inputs for each busy event and create a BusyTime out of them
     for(j = 0; j < event_count; j++)
     {
 
         var event_name = document.getElementById("event_input"+j).value;
 
+        localStorage.setItem("event_name"+j, event_name);
+
         var event_duration = document.getElementById("event_duration"+j).value;
 
         event_duration = (Math.ceil(event_duration/15)) * 15;
 
-        temp_event_array.push(event_name);
-
-        temp_event_array.push(event_duration);
+        localStorage.setItem("event_duration"+j, event_duration);
 
     }
-
-    document.getElementById("test").innerHTML = temp_event_array;
 
 }
 
@@ -289,17 +280,7 @@ function bubbleSort(arr){
     return arr;
 }
 
-function ScheduleAlgorithm(busy_time_array, events_array) {
-
-//-----------------Data Set Up-----------------------------------
-//this section sets up the data for the day/week schedule, when the day starts and when the day ends
-        data_collector();
-
-        day_or_week = sessionStorage.getItem("day_or_week");
-
-        start_of_day = sessionStorage.getItem("start_day");
-
-        end_of_day = sessionStorage.getItem("end_day");
+function ScheduleAlgorithm(busy_time_array, events_array, start_of_day, end_of_day, day_or_week) {
 
 //-----------------Start Algorithm------------------------------
 // -------------------------------------------------------------
@@ -420,4 +401,58 @@ function ScheduleAlgorithm(busy_time_array, events_array) {
 
         }
         return(schedule);
+}
+
+function main(){
+
+    //find whether the schedule is a day or week schedule
+    day_or_week = localStorage.getItem("day_or_week");
+
+    //get when the user's day starts
+    start_of_day = localStorage.getItem("start_day");
+
+    //get when the user's day ends
+    end_of_day = localStorage.getItem("end_day");
+
+    var busy_time_array = [];//will hold all the busy events and will be passed to the algorithm
+
+    var event_array = [];//will hold all the events and will be passed to the algorithm
+
+    //get the array of values from the busy events the user input
+
+    //the busy count but I don't want it to get confused with the global variable busy count, used to check how many busytime we need to create
+    var BC = localStorage.getItem("busy_count");
+
+    for(i = 0; i < BC; i++)
+    {
+
+        var name = localStorage.getItem("busy_input"+i);
+
+        var duration = localStorage.getItem("busy_duration"+i);
+
+        var start_time = localStorage.getItem("busy_start_time"+i);
+
+        var dow = localStorage.getItem("busy_day_of_week"+i);
+
+        busy_time_array.push( new BusyTime(name, duration, start_time, dow) );
+
+    }
+
+    var EC = localStorage.getItem("event_count");//get the event count we saved earlier because that is how many events we need to make
+
+    for(j = 0; j < EC; j++)
+    {
+
+        var name = localStorage.getItem("event_name"+j);
+
+        var duration = localStorage.getItem("event_duration"+j);
+
+        event_array.push( new Event(name, duration) );
+
+    }
+
+    output = ScheduleAlgorithm(busy_time_array, event_array, start_of_day, end_of_day, day_or_week);
+
+    document.getElementById("test").innerHTML = output;
+
 }
