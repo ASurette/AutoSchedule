@@ -1,1 +1,104 @@
+<script src="ScheduleAlgorithm.js"></script>
+<head>
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+    <meta name="google-signin-client_id" content="252843144180-f2hveniegnamogh2komir2asnvh6p3uo.apps.googleusercontent.com">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+<div class="g-signin2" data-onsuccess="onSignIn"></div>
+<a href="#" onclick="signOut();">Sign out</a>
+<script>
+    function signOut() {
+        var auth2 = gapi.auth2.getAuthInstance();
+        auth2.signOut().then(function () {
+            console.log('User signed out.');
+        });
+    }
+</script>
+
+<div id = "day_or_week">
+    Do you want a day or week schedule?
+    <select id="day_week_select">
+        <option value=0>Day</option>
+        <option value=1>Week</option>
+    </select>
+</div>
+
+<div id="day_begin_end">
+    When does the day start for you?
+    <select id="busy_start">
+        <option value="0000">00:00</option>
+        <option value="0100">01:00</option>
+        <option value="0200">02:00</option>
+        <option value="0300">03:00</option>
+        <option value="0400">04:00</option>
+        <option value="0500">05:00</option>
+        <option value="0600">06:00</option>
+        <option value="0700">07:00</option>
+        <option value="0800">08:00</option>
+        <option value="0900">09:00</option>
+        <option value="1000">10:00</option>
+        <option value="1100">11:00</option>
+        <option value="1200">12:00</option>
+        <option value="1300">13:00</option>
+        <option value="1400">14:00</option>
+        <option value="1500">15:00</option>
+        <option value="1600">16:00</option>
+        <option value="1700">17:00</option>
+        <option value="1800">18:00</option>
+        <option value="1900">19:00</option>
+        <option value="2000">20:00</option>
+        <option value="2100">21:00</option>
+        <option value="2200">22:00</option>
+        <option value="2300">23:00</option>
+        <option value="2400">24:00</option>
+    </select>
+
+    When does the day end for you?
+    <select id="busy_end">
+        <option value="0000">00:00</option>
+        <option value="0100">01:00</option>
+        <option value="0200">02:00</option>
+        <option value="0300">03:00</option>
+        <option value="0400">04:00</option>
+        <option value="0500">05:00</option>
+        <option value="0600">06:00</option>
+        <option value="0700">07:00</option>
+        <option value="0800">08:00</option>
+        <option value="0900">09:00</option>
+        <option value="1000">10:00</option>
+        <option value="1100">11:00</option>
+        <option value="1200">12:00</option>
+        <option value="1300">13:00</option>
+        <option value="1400">14:00</option>
+        <option value="1500">15:00</option>
+        <option value="1600">16:00</option>
+        <option value="1700">17:00</option>
+        <option value="1800">18:00</option>
+        <option value="1900">19:00</option>
+        <option value="2000">20:00</option>
+        <option value="2100">21:00</option>
+        <option value="2200">22:00</option>
+        <option value="2300">23:00</option>
+        <option value="2400">24:00</option>
+    </select>
+</div>
+
+<script>
+    function saveData()
+    {
+
+        localStorage.setItem("day_or_week", document.getElementById("day_week_select").value);
+
+        localStorage.setItem("start_day", document.getElementById("busy_start").value);
+
+        localStorage.setItem("end_day",   document.getElementById("busy_end").value);
+
+    }
+</script>
+
+<button type="button" onclick= "window.location.href='busy.html'; saveData();" >Click Me!</button>
+
+</body>
 
