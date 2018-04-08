@@ -201,7 +201,7 @@ function array_position_calculation(hour) {
 
    hours_in_minutes = (Number(hour[0] * 10) + Number(hour[1])) * 60;
 
-   minutes = (Number(hour[2])* 10) + Number(hour[3])
+   minutes = (Number(hour[2])* 10) + Number(hour[3]);
 
    space = (hours_in_minutes + minutes)/15;
 
@@ -210,28 +210,27 @@ function array_position_calculation(hour) {
 }
 
 //fill the array with the times the user gives as busy
-function fill_busy_array(busy_array, busy_time_array){
+function fill_busy_array(busy_array, busy_time_array) {
 
     var start_position;//where the event starts in the busy_array
 
     var time_ticks;//how many slots in the array the event will take up in the busy_array
 
-    for(i=0; i < busy_time_array.length; i++)
-    {
+        for (i = 0; i < busy_time_array.length; i++) {
 
-        start_position = array_position_calculation(busy_time_array[i].start_time);
+            start_position = array_position_calculation(busy_time_array[i].start_time);
 
-        time_ticks = Number(busy_time_array[i].time_length) / 15;
+            time_ticks = Number(busy_time_array[i].time_length) / 15;
 
-        for(j = start_position-1; j < (start_position+time_ticks); j++){
+            for (j = start_position - 1; j < (start_position + time_ticks); j++) {
 
-            busy_array[j] = busy_time_array[i].name;//mark it busy
+                busy_array[j] = busy_time_array[i].name;//mark it busy
+
+            }
 
         }
 
-    }
-
-    return busy_array
+    return busy_array;
 
 }
 
@@ -260,9 +259,62 @@ function array_creator(start_of_day, end_of_day, busy_time_array){
 
     }
 
-    fill_busy_array(busy_array, busy_time_array)
+    fill_busy_array(busy_array, busy_time_array);
 
     return busy_array;
+}
+
+function week_array_creator(start_of_day, end_of_day, busy_time_array){
+
+    var busy_array = Array.apply(null, Array(96)).map(Number.prototype.valueOf,0);
+
+    //NEED TO FIX THE CASE WHERE END OF DAY IS BEFORE START OF DAY
+
+    array_placement_start = array_position_calculation(start_of_day);
+
+    array_placement_end = array_position_calculation(end_of_day);
+
+    for(i = 0; i < array_placement_start; i++)
+    {
+
+        busy_array[i] = 'Sleeping';//set all the values until they start their day as busy
+
+    }
+
+    for(i = array_placement_end; i < 96; i++)
+    {
+
+        busy_array[i] = 'Sleeping'//the the values of when the user goes to sleep to busy
+
+    }
+
+    return busy_array;
+}
+
+function fill_busy_week_array(busy_array, busy_time_array, day_of_week) {
+
+    var start_position;//where the event starts in the busy_array
+
+    var time_ticks;//how many slots in the array the event will take up in the busy_array
+
+        for (i = 0; i < busy_time_array.length; i++) {
+
+            if(day_of_week == busy_time_array[i].day)
+            {
+                start_position = array_position_calculation(busy_time_array[i].start_time);
+
+                time_ticks = Number(busy_time_array[i].time_length) / 15;
+
+                for (j = start_position - 1; j < (start_position + time_ticks); j++) {
+
+                    busy_array[j] = busy_time_array[i].name;//mark it busy
+
+                }
+            }
+        }
+
+    return busy_array;
+
 }
 
 //insertion sort I found online at http://khan4019.github.io/front-end-Interview-Questions/sort.html
@@ -280,7 +332,7 @@ function bubbleSort(arr){
     return arr;
 }
 
-function ScheduleAlgorithm(busy_time_array, events_array, start_of_day, end_of_day, day_or_week) {
+function ScheduleAlgorithm(busy_time_array, events_array, start_of_day, end_of_day) {
 
 //-----------------Start Algorithm------------------------------
 // -------------------------------------------------------------
@@ -403,6 +455,156 @@ function ScheduleAlgorithm(busy_time_array, events_array, start_of_day, end_of_d
         return(schedule);
 }
 
+function WeekScheduleAlgorithm(busy_time_array, events_array, start_of_day, end_of_day) {
+
+//-----------------Start Algorithm------------------------------
+// -------------------------------------------------------------
+
+    //create the busy arrays
+    var busy_array0 = week_array_creator(start_of_day, end_of_day, busy_time_array);
+    var busy_array1 = week_array_creator(start_of_day, end_of_day, busy_time_array);
+    var busy_array2 = week_array_creator(start_of_day, end_of_day, busy_time_array);
+    var busy_array3 = week_array_creator(start_of_day, end_of_day, busy_time_array);
+    var busy_array4 = week_array_creator(start_of_day, end_of_day, busy_time_array);
+    var busy_array5 = week_array_creator(start_of_day, end_of_day, busy_time_array);
+    var busy_array6 = week_array_creator(start_of_day, end_of_day, busy_time_array);
+
+    //fill the arrays with the correct busy events
+    fill_busy_week_array(busy_array0, busy_time_array, 0);
+    fill_busy_week_array(busy_array1, busy_time_array, 1);
+    fill_busy_week_array(busy_array2, busy_time_array, 2);
+    fill_busy_week_array(busy_array3, busy_time_array, 3);
+    fill_busy_week_array(busy_array4, busy_time_array, 4);
+    fill_busy_week_array(busy_array5, busy_time_array, 5);
+    fill_busy_week_array(busy_array6, busy_time_array, 6);
+
+    //put all of them in one array
+    busy_week_array = [busy_array0, busy_array1, busy_array2, busy_array3, busy_array4, busy_array5, busy_array6];
+
+    //set up a variable that will calculate how much time the user has in the day/week
+    var total_free_time = 0;
+
+    //loop through the busy array to see how much time they have in total
+    for (k = 0; k < 7; k++)
+    {
+        for (i = 0; i < 96; i++) {
+            if (busy_week_array[k][i] == 0) {
+
+                total_free_time += 15;
+
+            }
+        }
+    }
+
+    number_events = events_array.length;
+
+    total_event_time = 0;
+
+    //turn the time_length string to an int
+    for(i = 0; i < events_array.length; i++){
+        Number(events_array[i].time_length)
+    }
+
+    for(j = 0; j < number_events; j++){
+
+        total_event_time = total_event_time + Number(events_array[j].time_length);
+
+    }
+
+    if(total_free_time < total_event_time){
+        return('There is not enough time in the week for all of your events.')
+    }
+
+    var schedule = busy_week_array;//make a copy in case we need the busy array untouched for something later
+
+    bubbleSort(events_array);//this bubblesort sorts high to low, this is because I want to find space for the large time commitments since they will fit in less spaces as events are placed
+
+    //loop through the schedule and look for a 0, then see if there are enough 0 behind that 0 to place the current event in there
+    //once you find a spot replace enough 0 with that event name
+
+    //for loop to loop through events
+    //find all the potential spaces the event can go in
+    //event should be touching at least 1 non-0, this way you don't waste potential time by putting a large event
+    // in the middle of a time block then can't fit a smaller event around it
+
+    number_of_events = events_array.length;
+
+    for(i = 0; i < number_of_events; i++)//for all of the events
+    {
+        var potential_array = [0];//array where we will be putting potential places for events
+
+        for(z = 0; z<7; z++)
+        {
+            for(j = 0; j < 96; j++)//loop through the schedule and look for an empty space
+            {
+                //need to fix the edge case where j=0
+
+                //if there is an empty space and the previous space isn't empty
+                //this is to spend less time looping through unnecessarily
+                //and to make sure we optimize the amount of space the algo has to work with
+
+                if (((schedule[z][j] == 0) && schedule[z][j - 1] != 0)) {
+
+                    var is_space = true;//this value if for the next part to see if there is a continuous string of 0's
+
+                    for (k = 0; k < (Number(events_array[i].time_length) / 15); k++)//loop through for how long the event lasts
+                    {
+
+                        if (k + j > 95) {
+                            is_space = false; //if k+j is > 95 that means we can't place the event there
+                        }
+                        else if (schedule[z][k + j] != 0)//if at any point there is no empty space then we can't use that 0
+                        {
+                            is_space = false;
+                        }
+
+                    }
+
+                    if (is_space == true)//if we find a spot where we can fit the event save it in an array
+                    {
+                        if (potential_array.length == 1 && potential_array[0] == 0) {
+                            potential_array[0] = [z,j];
+                        }
+                        else {
+                            potential_array.push([z,j]);
+                        }
+
+                    }
+
+
+                }
+            }
+        }
+
+        if(potential_array[0] == 0)//if no valid spaces were found
+        {
+
+            return('There is no space for this event:');
+
+        }
+        else
+        {
+            var rng = Math.floor(Math.random() * potential_array.length);//way to chose a random space in the schedule
+
+            number_of_spaces = Number(events_array[i].time_length)/15;//how many spaces the event fills in the schedule
+
+            x = potential_array[rng][0];
+
+            y = potential_array[rng][1];
+
+            for(m = 0; m < number_of_spaces; m++)
+            {
+                schedule[x][y+m] = events_array[i].name;
+            }
+
+        }
+
+    }
+
+    return(schedule);
+
+}
+
 function main(){
 
     //find whether the schedule is a day or week schedule
@@ -451,8 +653,108 @@ function main(){
 
     }
 
-    output = ScheduleAlgorithm(busy_time_array, event_array, start_of_day, end_of_day, day_or_week);
+    //if we are doing only a day schedule
+    if(day_or_week == 0)
+    {
 
-    document.getElementById("test").innerHTML = output;
+        output = ScheduleAlgorithm(busy_time_array, event_array, start_of_day, end_of_day);
+
+        for(m = 95; j > -1; j--)
+        {
+            if(output[m] == 'Sleeping')
+            {
+                delete(output[m]);
+            }
+        }
+
+        document.getElementById('day0').innerHTML = output;
+
+    }
+    //we are doing a week schedule
+    else
+    {
+
+        output = WeekScheduleAlgorithm(busy_time_array, event_array, start_of_day, end_of_day);
+
+        for(h = 0; h < 7; h++)
+        {
+            for(j = 95; j > -1; j--)
+            {
+                if(output[h][j] == 'Sleeping')
+                {
+                    delete(output[h][j]);
+                }
+            }
+        }
+
+        //add the day schedules to the divs
+
+        document.getElementById("day0").innerHTML = output[0];
+        document.getElementById("day1").innerHTML = output[1];
+        document.getElementById("day2").innerHTML = output[2];
+        document.getElementById("day3").innerHTML = output[3];
+        document.getElementById("day4").innerHTML = output[4];
+        document.getElementById("day5").innerHTML = output[5];
+        document.getElementById("day6").innerHTML = output[6];
+
+    }
 
 }
+/*
+function test()
+{
+
+    var start_of_day = '0900';
+    var end_of_day = '2300';
+
+    var BT0_0 = new BusyTime('Lunch',   '30', '1130', 0);
+    var BT0_1 = new BusyTime('Lunch',   '30', '1130', 1);
+    var BT0_2 = new BusyTime('Lunch',   '30', '1130', 2);
+    var BT0_3 = new BusyTime('Lunch',   '30', '1130', 3);
+    var BT0_4 = new BusyTime('Lunch',   '30', '1130', 4);
+    var BT0_5 = new BusyTime('Lunch',   '30', '1130', 5);
+    var BT0_6 = new BusyTime('Lunch',   '30', '1130', 6);
+    var BT1_1 = new BusyTime('Workout', '45', '1330', 1);
+    var BT1_3 = new BusyTime('Workout', '45', '1330', 3);
+    var BT2_2 = new BusyTime('Math',    '75', '1230', 2);
+    var BT2_4 = new BusyTime('Math',    '75', '1230', 4);
+
+    var busy_time_array = [BT0_0, BT0_1, BT0_2, BT0_3, BT0_4, BT0_5, BT0_6, BT1_1, BT1_3, BT2_2, BT2_4];
+
+    var ET0 = new Event('Math Homework', '120');
+    var ET1 = new Event('Coding Homework', '90');
+    var ET2 = new Event('Laundry', '180');
+    var ET3 = new Event('Senior Design', '60');
+    var ET4 = new Event('Senior Design 2', '120');
+    var ET5 = new Event('Grocery Shopping');
+
+    var event_array = [ET0, ET1, ET2, ET3, ET4, ET5];
+
+    schedule = WeekScheduleAlgorithm(busy_time_array, event_array, start_of_day, end_of_day);
+
+    for(h = 0; h < 7; h++)
+    {
+        for(j = 95; j > -1; j--)
+        {
+
+            if(schedule[h][j] == 'Sleeping')
+            {
+
+                delete(schedule[h][j]);
+
+            }
+
+        }
+    }
+
+    document.getElementById("day0").innerHTML = schedule[0];
+    document.getElementById("day1").innerHTML = schedule[1];
+    document.getElementById("day2").innerHTML = schedule[2];
+    document.getElementById("day3").innerHTML = schedule[3];
+    document.getElementById("day4").innerHTML = schedule[4];
+    document.getElementById("day5").innerHTML = schedule[5];
+    document.getElementById("day6").innerHTML = schedule[6];
+
+}
+*/
+//test();
