@@ -253,8 +253,6 @@ function fill_busy_array(busy_array, busy_time_array) {
 
         start_position = array_position_calculation(busy_time_array[i].start_time) + 1;
 
-        console.log('Start position is:', start_position);
-
         time_ticks = Number(busy_time_array[i].time_length) / 15;
 
         for (j = start_position - 1; j < (start_position + time_ticks - 1); j++) {
@@ -264,9 +262,7 @@ function fill_busy_array(busy_array, busy_time_array) {
         }
 
     }
-
     return busy_array;
-
 }
 
 //creates the array of arrays for when the user is busy for a week schedule
@@ -339,15 +335,14 @@ function bubbleSort(arr){
     return arr;
 }
 
+//converts minutes to hours and minutes
 function convert_min_to_hr(time){
 
     var hours = Math.floor(time/60);//the number of hours in the time
 
     var min = time % 60;//the remainder which in this case is the minutes
 
-    var HHMM =[hours,min];
-
-    return HHMM;
+    return [hours,min];
 
 }
 
@@ -368,7 +363,6 @@ function add_times(time1, time2){
 
     return [hour, min];
 }
-
 
 //the algorithm that calculates where the events should go
 function ScheduleAlgorithm(busy_time_array, events_array, start_of_day, end_of_day) {
@@ -659,35 +653,31 @@ function addToGoogleCalendar() {
 
     if(day_or_week == 0)//if we are doing a day schedule
     {
-        var EA = [];
+
         //loop through the array and look for non-0 non-Sleeping values
         for(i = 0; i < 96; i++)
         {
 
-            if(final_schedule[i] != 0 & final_schedule[i] != 'Sleeping')
+            if(final_schedule[i] != 0 && final_schedule[i] != 'Sleeping')
             {
                 count = 0;
 
-                while(final_schedule[i] == final_schedule[i+count])
-                {
+                do { count++ }
+                while (final_schedule[i] == final_schedule[i+count]);
 
-                    count++;
+                var ST = convert_min_to_hr((i)*15);//start time
 
-                }
-
-                var ST = convert_min_to_hr((i+1)*15);//start time
-
-                var duration = convert_min_to_hr(count * 15);//duration of the event
+                var duration = convert_min_to_hr((count) * 15);//duration of the event
 
                 var ET = add_times(ST, duration);//adds the duration to the start time to find the end time
 
-                console.log(ST);
+                console.log("st[1]: ", ST[1]);
 
-                console.log(ET);
+                console.log('Start time of ', final_schedule[i], 'is:', ST);
 
-                EA.push(i);
+                console.log('End time of ', final_schedule[i], 'is:', ET);
 
-                i += count;//skip past all the spaces we checked with the while loop so we do not get duplicate events at the same time
+                i += count-1;//skip past all the spaces we checked with the while loop so we do not get duplicate events at the same time
 
             }
 
