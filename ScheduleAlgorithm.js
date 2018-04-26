@@ -639,6 +639,111 @@ function WeekScheduleAlgorithm(busy_time_array, events_array, start_of_day, end_
 
 }
 
+//this function calulcates which days of the week are which date depending on the user's initial date
+//it takes into consideration if the month or year will change
+function calculate_week(year, month, day, day_of_week)
+{
+    year = parseInt(year);
+    month = parseInt(month);
+    day = parseInt(day);
+
+    var days_in_month = 0;// a variable that will store the total number of days in the month depending on what month it is
+
+    //if the month is Jan Mar, May, Jul, Aug, Oct, Dec
+    if(month == 1 | month == 3 | month == 5 | month == 7 | month == 8 | month == 10 | month == 12){days_in_month = 31;}
+    //if the month is Apr, Jun, Sep, Nov
+    else if(month == 4 | month == 6 | month == 9 | month == 11){days_in_month = 30;}
+    //if the month is Feb, we need to check if it is a leap year
+    else if(month ==2)
+    {
+        //checking if it is a leap year
+        //its a leap year if the year%4 is 0, year%100 is not 0, unless year%400 is 0
+        if(year%4 == 0)//if the year is divisible by 4 evenly
+        {
+            if(year%100 == 0)//if year is divisible by 100 evenly
+            {
+                //if year is divisible by 400 evenly
+                if(year%400 == 0) {days_in_month = 29;}
+                else {days_in_month = 28;}//if not a leap year
+            }
+            else
+            {
+                days_in_month = 29;
+            }
+        }
+        else{days_in_month = 28;}//if not a leap year
+    }
+    else{return 'Error: not a valid month';}
+
+    var date_array = [];//an array that hold the dates inthe format YYYY-MM-DD, which is what the google calendar api needs
+
+    //check if we need to go into the next month
+    if( ((day+7)>days_in_month) )
+    {
+        var difference = days_in_month - day;//the differences in the number of days
+
+        //calculates the offsets
+        for(i = 0; i < 7; i++)
+        {
+
+            var offset = 7 - (day_of_week - i);//the offset for the date, if Tues is the 17th, the sunday needs to be +5 or the 22nd
+            if (offset >= 7) {offset = offset - 7;}//this is part of the offset equation
+
+            var date;
+            if ((day + offset) > days_in_month)//if the offset pushes you into another month
+            {
+
+                var temp_m = parseInt(month) + 1;
+
+                var temp_y = year;
+
+                if(temp_m == 13)
+                {
+                    temp_m = 1;
+
+                    temp_y = year + 1;
+
+                }
+
+                if( String(temp_m).length == 1){temp_m = '0' + String(temp_m);}
+
+                var off_diff = offset - difference;//this value is the day of the next month so if the offset is 3 and the difference is 2 3-2=1 so the date is the first
+                if( String(off_diff).length == 1){off_diff = '0' + String(off_diff);}
+
+                date = temp_y + '-' + temp_m + '-' + off_diff;//setting it to the format Google Calendar Needs
+
+            }
+            else//not in the next month ever
+            {
+                if( String(month).length == 1){month = '0' + String(month);}
+
+                date = year + '-' + month + '-' + (day + offset);//setting it to the format Google Calendar Needs
+            }
+
+            date_array.push(date);
+
+        }
+    }
+    else//we do not go into next month
+    {
+        //calculates the offsets
+        for(i = 0; i < 7; i++)
+        {
+            var offset = 7-(day_of_week-i);//the offset for the date, if Tues is the 17th, the sunday needs to be +5 or the 22nd
+
+            if(offset >= 7){offset = offset - 7;}//this is part of the offset equation
+
+            var date = year+'-'+month+'-'+(day+offset);//setting it to the format Google Calendar Needs
+
+            date_array.push(date);
+
+        }
+    }
+
+    return date_array;
+
+}
+
 //this function gets the current schedule and adds it to the user's google calender
 function addToGoogleCalendar() {
 
@@ -646,9 +751,13 @@ function addToGoogleCalendar() {
     month = document.getElementById("month").value;
     day = document.getElementById("day").value;
 
+    var d = new Date(year, month-1, day);//date treats Jan as  month 0 so it needs to be -1 to get the correct month
+
+    day_of_week = d.getDay();//what day of the week the starting date is, this is used for calculating what exact week the user's schedule is
+
     start_date = year+'-'+month+'-'+day;
 
-    day_or_week = localStorage.getItem("day_or_week");
+    day_or_week = localStorage.getItem("day_or_week");//if it is a day or week schedule
 
 
     if(day_or_week == 0)//if we are doing a day schedule
@@ -732,7 +841,90 @@ function addToGoogleCalendar() {
     else//if it is a week schedule
     {
 
+        date_array = calculate_week(year, month, day, day_of_week);//creates the date array that is needed for adding the events on the correct days
 
+        console.log(date_array);
+
+        for(p = 0; p < 7; p++) {
+
+            start_end_array = [];//an array that hold the start and end times of an event as well as the name of that event
+
+            //loop through the array and look for non-0 non-Sleeping values aka events and busy events
+            for (i = 0; i < 96; i++) {
+
+                if (final_schedule[p][i] != 0 && final_schedule[p][i] != 'Sleeping') {
+
+                    var ST = convert_min_to_hr((i) * 15);//start time, returns an array[hours, minutes ]
+
+                    count = 0;
+
+                    do {
+                        count++
+                    }
+                    while (final_schedule[p][i] == final_schedule[p][i + count]);
+                    var duration = convert_min_to_hr((count) * 15);//duration of the event, returns an array [hours, minutes]
+
+                    var ET = add_times(ST, duration);//adds the duration to the start time to find the end time
+
+                    start_end_array.push(final_schedule[p][i], ST, ET);//adds the name of the event, when it starts and when it ends to the array
+
+                    i += count - 1;//skip past all the spaces we checked with the while loop so we do not get duplicate events at the same time
+
+                }
+
+            }
+
+            //now we have the date and when each event starts and ends as well as its name
+            //we can make Google Calendar Events and push them to the calendar
+            for (k = 0; k < start_end_array.length; k = k + 3) {
+
+                var start_hour = String(start_end_array[k + 1][0]);
+                var start_min = String(start_end_array[k + 1][1]);
+
+                var end_hour = String(start_end_array[k + 2][0]);
+                var end_min = String(start_end_array[k + 2][1]);
+
+                //these if statements turn the int values of hour and minutes into strings and add 0 if it a single value
+                //if the hour is 7 then it needs to be '07'
+                if (start_hour.length == 1) {
+                    start_hour = '0' + start_hour;
+                }
+                if (start_min.length == 1) {
+                    start_min = '0' + start_min;
+                }
+                if (end_hour.length == 1) {
+                    end_hour = '0' + end_hour
+                }
+                if (end_min.length == 1) {
+                    end_min = '0' + end_min;
+                }
+
+                var event = {
+                    'summary': start_end_array[k],
+                    'start': {
+                        'dateTime': date_array[p] + 'T' + start_hour + ":" + start_min + ":00",
+                        "timeZone": "America/New_York"
+                    },
+                    'end': {
+                        'dateTime': date_array[p] + 'T' + end_hour + ":" + end_min + ":00",
+                        "timeZone": "America/New_York"
+                    }
+                }
+
+                console.log(event);
+
+                var request = gapi.client.calendar.events.insert({
+                    'calendarId': 'primary',
+                    'resource': event
+                });
+
+                request.execute(function (event) {
+                    appendPre('Event created: ' + event.htmlLink);
+                });
+
+            }
+
+        }
 
 
     }
