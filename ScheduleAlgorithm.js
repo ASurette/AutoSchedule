@@ -1,4 +1,3 @@
-
 //setting up classes for events and times when the user is busy, they will be in their own arrays and will be used
 //to fill out the array
 class Event{
