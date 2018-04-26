@@ -1,13 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Here is your schedule</title>
+    <meta charset='utf-8' />
+</head>
+<body onunload="localStorageClear()">
+
+<!--Add buttons to initiate auth sequence and sign out-->
+<button id="authorize-button" style="display: none;">Authorize</button>
+<button id="signout-button" style="display: none;">Sign Out</button>
+
+<pre id="content"></pre>
+
+<script type="text/javascript">
+    // Client ID and API key from the Developer Console
+    var CLIENT_ID = '';
+    var API_KEY = '';
+
+    // Array of API discovery doc URLs for APIs used by the quickstart
+    var DISCOVERY_DOCS = ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"];
+
+    // Authorization scopes required by the API; multiple scopes can be
+    // included, separated by spaces.
+    var SCOPES = "https://www.googleapis.com/auth/calendar";
+
+    var authorizeButton = document.getElementById('authorize-button');
+    var signoutButton = document.getElementById('signout-button');
+
+    /**
+     *  On load, called to load the auth2 library and API client library.
+     */
+    function handleClientLoad() {
+        gapi.load('client:auth2', initClient);
+    }
+
+    /**
+     *  Initializes the API client library and sets up sign-in state
+     *  listeners.
+     */
+    function initClient() {
+        gapi.client.init({
+            apiKey: API_KEY,
+            clientId: CLIENT_ID,
+            discoveryDocs: DISCOVERY_DOCS,
+            scope: SCOPES
+        }).then(function () {
+            // Listen for sign-in state changes.
+            gapi.auth2.getAuthInstance().isSignedIn.listen(updateSigninStatus);
+
+            // Handle the initial sign-in state.
+            updateSigninStatus(gapi.auth2.getAuthInstance().isSignedIn.get());
+            authorizeButton.onclick = handleAuthClick;
+            signoutButton.onclick = handleSignoutClick;
+        });
+    }
+
+    /**
+     *  Called when the signed in status changes, to update the UI
+     *  appropriately. After a sign-in, the API is called.
+     */
+    function updateSigninStatus(isSignedIn) {
+        if (isSignedIn) {
+            authorizeButton.style.display = 'none';
+            signoutButton.style.display = 'block';
+        } else {
+            authorizeButton.style.display = 'block';
+            signoutButton.style.display = 'none';
+        }
+    }
+
+    /**
+     *  Sign in the user upon button click.
+     */
+    function handleAuthClick(event) {
+        gapi.auth2.getAuthInstance().signIn();
+    }
+
+    /**
+     *  Sign out the user upon button click.
+     */
+    function handleSignoutClick(event) {
+        gapi.auth2.getAuthInstance().signOut();
+    }
+
+    /**
+     * Append a pre element to the body containing the given message
+     * as its text node. Used to display the results of the API call.
+     *
+     * @param {string} message Text to be placed in pre element.
+     */
+    function appendPre(message) {
+        var pre = document.getElementById('content');
+        var textContent = document.createTextNode(message + '\n');
+        pre.appendChild(textContent);
+    }
+
+    /*
+    function create(){
+
+        var event = {"summary": "This is a test",
+                     'start': {'dateTime': "2018-04-26T09:00:00", "timeZone": "America/New_York"},
+                      'end':   {"dateTime": "2018-04-26T17:00:00", "timeZone": "America/New_York"}
+        }
+
+        var request = gapi.client.calendar.events.insert({
+            'calendarId': 'primary',
+            'resource': event
+        });
+
+        request.execute(function(event) {
+            appendPre('Event created: ' + event.htmlLink);
+        });
+
+    }
+    */
+</script>
 
 <script src="ScheduleAlgorithm.js"></script>
-
-<body>
 
 <p>Here is your schedule</p>
 
 <div id="day0"></div>
 <br>
-
 <div id="day1"></div>
 <br>
 <div id="day2"></div>
@@ -23,4 +137,82 @@
 
 <button onclick="main()">Generate Schedule</button>
 
+<br>
+<div id="date select">What date does you day/week start on?
+    <br>
+
+    Year:
+    <select id="year">
+        <option value=2018>2018</option>
+        <option value=2019>2019</option>
+        <option value=2020>2020</option>
+        <option value=2021>2021</option>
+        <option value=2022>2022</option>
+        <option value=2023>2023</option>
+        <option value=2024>2024</option>
+    </select>
+
+    Month:
+    <select id="month">
+        <option value=01>January</option>
+        <option value=02>February</option>
+        <option value=03>March</option>
+        <option value=04>April</option>
+        <option value=05>May</option>
+        <option value=06>June</option>
+        <option value=07>July</option>
+        <option value=08>August</option>
+        <option value=09>September</option>
+        <option value=10>October</option>
+        <option value=11>November</option>
+        <option value=12>December</option>
+    </select>
+
+    Day:
+    <select id="day">
+        <option value=01>1</option>
+        <option value=02>2</option>
+        <option value=03>3</option>
+        <option value=04>4</option>
+        <option value=05>5</option>
+        <option value=06>6</option>
+        <option value=07>7</option>
+        <option value=08>8</option>
+        <option value=09>9</option>
+        <option value=10>10</option>
+        <option value=11>11</option>
+        <option value=12>12</option>
+        <option value=13>13</option>
+        <option value=14>14</option>
+        <option value=15>15</option>
+        <option value=16>16</option>
+        <option value=17>17</option>
+        <option value=18>18</option>
+        <option value=19>19</option>
+        <option value=20>20</option>
+        <option value=21>21</option>
+        <option value=22>22</option>
+        <option value=23>23</option>
+        <option value=24>24</option>
+        <option value=25>25</option>
+        <option value=26>26</option>
+        <option value=27>27</option>
+        <option value=28>28</option>
+        <option value=29>29</option>
+        <option value=30>30</option>
+        <option value=31>31</option>
+    </select>
+</div>
+
+<br>
+
+<button onclick="addToGoogleCalendar();">Add the current schedule to your Google Calendar</button>
+
+<script async defer src="https://apis.google.com/js/api.js"
+        onload="this.onload=function(){};handleClientLoad()"
+        onreadystatechange="if (this.readyState === 'complete') this.onload()">
+</script>
+
 </body>
+
+</html>
