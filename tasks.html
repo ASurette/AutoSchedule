@@ -1,14 +1,62 @@
 
 <script src="ScheduleAlgorithm.js"></script>
 
+<style>
+    p {
+        background-color: #39587E;
+        color: white;
+        font-size: 24px;
+        text-align: center;
+
+    }
+    body {background-color: #39587E}
+
+    button{
+        background-color: #39587E;
+        border: 2px solid #FFFFFF;
+        color: white;
+        text-align: center;
+        padding: 15px 32px;
+        font-size: 16px;
+        justify-content: center;
+    }
+
+    .centerB{
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width: 200px;
+    }
+
+    div{
+        color: white;
+        font-size: 20px;
+        text-align: center;
+    }
+
+    select{
+        color: #FFFFFF;
+        font-size: 24px;
+        text-align: center;
+        background-color: #39587E;
+    }
+
+</style>
+
+<p>What do you need to accomplish this day/week?</p>
+
+<br>
+
 <body>
 
-<p>What do you need to do?</p>
+<button onclick="event_create()" class="centerB">Create New Event</button>
 
-<button onclick="event_create()">Create New Event</button>
+<br>
 
 <div id = "event_create"></div>
 
-<button onclick="event_data_collector(); window.location.href='schedule.html';">Next Page</button>
+<br>
+
+<button onclick="event_data_collector(); window.location.href='schedule.html';" class="centerB">Submit</button>
 
 </body>
