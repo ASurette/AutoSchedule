@@ -1,21 +1,44 @@
 <script src="ScheduleAlgorithm.js"></script>
-<head>
-    <script src="https://apis.google.com/js/platform.js" async defer></script>
-    <meta name="google-signin-client_id" content="">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-</head>
-<body>
-<div class="g-signin2" data-onsuccess="onSignIn"></div>
-<a href="#" onclick="signOut();">Sign out</a>
-<script>
-    function signOut() {
-        var auth2 = gapi.auth2.getAuthInstance();
-        auth2.signOut().then(function () {
-            console.log('User signed out.');
-        });
+<style>
+    body {background-color: #39587E}
+    button{
+        background-color: #39587E;
+        border: 2px solid #FFFFFF;
+        color: white;
+        text-align: center;
+        padding: 15px 32px;
+        font-size: 16px;
+        justify-content: center;
     }
-</script>
+    div{
+        color: white;
+        font-size: 24px;
+        text-align: center;
+    }
+    select{
+        color: #FFFFFF;
+        font-size: 24px;
+        text-align: center;
+        background-color: #39587E;
+    }
+    .center{
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width: 357px;
+    }
+    .centerB{
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width: 200px;
+    }
+</style>
+<img src="autoschedulelogo.png" alt="AutoSchedule" class="center">
+<body onload="localStorageClear()">
+
+<br>
+<br>
 
 <div id = "day_or_week">
     Do you want a day or week schedule?
@@ -24,6 +47,8 @@
         <option value=1>Week</option>
     </select>
 </div>
+
+<br>
 
 <div id="day_begin_end">
     When does the day start for you?
@@ -98,7 +123,10 @@
     }
 </script>
 
-<button type="button" onclick= "window.location.href='busy.html'; saveData();" >Click Me!</button>
+<br>
+<br>
+
+<button id="submit" type="button" onclick= "window.location.href='busy.html'; saveData();" class="centerB">Submit</button>
 
 </body>
 
