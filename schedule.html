@@ -1,16 +1,47 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <title>Here is your schedule</title>
-    <meta charset='utf-8' />
-</head>
-<body onunload="localStorageClear()">
+
+<style>
+    body {background-color: #39587E}
+    button{
+        background-color: #39587E;
+        border: 2px solid #FFFFFF;
+        color: white;
+        text-align: center;
+        padding: 15px 32px;
+        font-size: 16px;
+        justify-content: center;
+    }
+    div{
+        color: white;
+        font-size: 24px;
+        text-align: center;
+    }
+    p {
+        background-color: #39587E;
+        color: white;
+        font-size: 24px;
+        text-align: center;
+
+    }
+    .centerB{
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width: 200px;
+    }
+</style>
+
+
+<body onload="main()" onunload="localStorageClear()">
 
 <!--Add buttons to initiate auth sequence and sign out-->
-<button id="authorize-button" style="display: none;">Authorize</button>
-<button id="signout-button" style="display: none;">Sign Out</button>
+<button id="authorize-button" style="display: none;" class="centerB">Sign in to Google</button>
+<button id="signout-button" style="display: none;" class="centerB">Sign out of Google</button>
 
 <pre id="content"></pre>
+
+<p>Here is your schedule for the day/week</p>
 
 <script type="text/javascript">
     // Client ID and API key from the Developer Console
@@ -118,8 +149,6 @@
 
 <script src="ScheduleAlgorithm.js"></script>
 
-<p>Here is your schedule</p>
-
 <div id="day0"></div>
 <br>
 <div id="day1"></div>
@@ -135,7 +164,7 @@
 <div id="day6"></div>
 <br>
 
-<button onclick="main()">Generate Schedule</button>
+<button onclick="main()" class="centerB">Generate Schedule</button>
 
 <br>
 <div id="date select">What date does you day/week start on?
@@ -206,7 +235,7 @@
 
 <br>
 
-<button onclick="addToGoogleCalendar();">Add the current schedule to your Google Calendar</button>
+<button onclick="addToGoogleCalendar();" class="centerB">Add the current schedule to your Google Calendar</button>
 
 <script async defer src="https://apis.google.com/js/api.js"
         onload="this.onload=function(){};handleClientLoad()"
