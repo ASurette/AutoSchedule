@@ -1,13 +1,69 @@
 <script src="ScheduleAlgorithm.js"></script>
 
+<style>
+    p {
+        background-color: #39587E;
+        color: white;
+        font-size: 24px;
+        text-align: center;
+
+    }
+    body {background-color: #39587E}
+
+    button{
+        background-color: #39587E;
+        border: 2px solid #FFFFFF;
+        color: white;
+        text-align: center;
+        padding: 15px 32px;
+        font-size: 16px;
+        justify-content: center;
+    }
+
+    .centerB{
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width: 200px;
+    }
+
+    div{
+        color: white;
+        font-size: 20px;
+        text-align: center;
+    }
+
+    select{
+        color: #FFFFFF;
+        font-size: 20px;
+        text-align: center;
+        background-color: #39587E;
+        height: 50px;
+    }
+
+    input{
+        color: #FFFFFF;
+        background-color: #39587E;
+        border: 2px solid #FFFFFF;
+        font-size: 20px;
+    }
+
+</style>
+
 <body>
 
 <p>When are you busy?</p>
 
-<button onclick="busy_create()">Create New Busy Event</button>
+<br>
+
+<button onclick="busy_create()" class="centerB">Create New Busy Event</button>
+
+<br>
 
 <div id = "busy_create"></div>
 
-<button onclick="busy_data_collector(); window.location.href='tasks.html';">Next Page</button>
+<br>
+
+<button onclick="busy_data_collector(); window.location.href='tasks.html';" class="centerB">Submit</button>
 
 </body>
