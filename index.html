@@ -1,26 +1,30 @@
 <script src="ScheduleAlgorithm.js"></script>
 <style>
-    body {background-color: #39587E}
+    body {background-image: url("grey-linen-texture-background.jpg")}
+
     button{
-        background-color: #39587E;
-        border: 2px solid #FFFFFF;
-        color: white;
+        background-color: #F5F5F5;
+        border: 2px solid black;
+        color: black;
         text-align: center;
         padding: 15px 32px;
         font-size: 16px;
         justify-content: center;
     }
     div{
-        color: white;
-        font-size: 24px;
+        color: black;
+        font-size: 20px;
         text-align: center;
     }
     select{
-        color: #FFFFFF;
-        font-size: 24px;
+        color: #000000;
+        font-size: 20px;
         text-align: center;
-        background-color: #39587E;
+        background-color: #F5F5F5;
+        height: 50px;
+        border: 2px solid lightgray;
     }
+
     .center{
         display: block;
         margin-left: auto;
@@ -34,7 +38,7 @@
         width: 200px;
     }
 </style>
-<img src="autoschedulelogo.png" alt="AutoSchedule" class="center">
+<img src="autoschedulelogo2.png" alt="AutoSchedule" class="center">
 <body onload="localStorageClear()">
 
 <br>
@@ -110,6 +114,77 @@
     </select>
 </div>
 
+<br>
+<br>
+
+<div id="date select">What date does you day/week start on?
+    <br>
+
+    Year:
+    <select id="year">
+        <option value=2018>2018</option>
+        <option value=2019>2019</option>
+        <option value=2020>2020</option>
+        <option value=2021>2021</option>
+        <option value=2022>2022</option>
+        <option value=2023>2023</option>
+        <option value=2024>2024</option>
+    </select>
+
+    Month:
+    <select id="month">
+        <option value=01>January</option>
+        <option value=02>February</option>
+        <option value=03>March</option>
+        <option value=04>April</option>
+        <option value=05>May</option>
+        <option value=06>June</option>
+        <option value=07>July</option>
+        <option value=08>August</option>
+        <option value=09>September</option>
+        <option value=10>October</option>
+        <option value=11>November</option>
+        <option value=12>December</option>
+    </select>
+
+    Day:
+    <select id="day">
+        <option value=01>1</option>
+        <option value=02>2</option>
+        <option value=03>3</option>
+        <option value=04>4</option>
+        <option value=05>5</option>
+        <option value=06>6</option>
+        <option value=07>7</option>
+        <option value=08>8</option>
+        <option value=09>9</option>
+        <option value=10>10</option>
+        <option value=11>11</option>
+        <option value=12>12</option>
+        <option value=13>13</option>
+        <option value=14>14</option>
+        <option value=15>15</option>
+        <option value=16>16</option>
+        <option value=17>17</option>
+        <option value=18>18</option>
+        <option value=19>19</option>
+        <option value=20>20</option>
+        <option value=21>21</option>
+        <option value=22>22</option>
+        <option value=23>23</option>
+        <option value=24>24</option>
+        <option value=25>25</option>
+        <option value=26>26</option>
+        <option value=27>27</option>
+        <option value=28>28</option>
+        <option value=29>29</option>
+        <option value=30>30</option>
+        <option value=31>31</option>
+    </select>
+</div>
+
+<br>
+
 <script>
     function saveData()
     {
@@ -120,11 +195,14 @@
 
         localStorage.setItem("end_day",   document.getElementById("busy_end").value);
 
+        localStorage.setItem("year", document.getElementById("year").value);
+
+        localStorage.setItem("month", document.getElementById("month").value);
+
+        localStorage.setItem("day", document.getElementById("day").value);
+
     }
 </script>
-
-<br>
-<br>
 
 <button id="submit" type="button" onclick= "window.location.href='busy.html'; saveData();" class="centerB">Submit</button>
 
