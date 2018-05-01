@@ -115,7 +115,7 @@ function busy_create() {
 
     //label to give the user info
     var label4 = document.createElement("label");
-    label4.textContent = "How long will it take (in minutes)? "
+    label4.textContent = "How long will it take? "
     div.appendChild(label4);
 
     //add an input for how long the busy event lasts
@@ -818,9 +818,9 @@ function calculate_week(year, month, day, day_of_week)
 //this function gets the current schedule and adds it to the user's google calender
 function addToGoogleCalendar() {
 
-    year = document.getElementById("year").value;
-    month = document.getElementById("month").value;
-    day = document.getElementById("day").value;
+    year = localStorage.getItem("year");
+    month = localStorage.getItem("month");
+    day = localStorage.getItem("day");
 
     var d = new Date(year, month-1, day);//date treats Jan as  month 0 so it needs to be -1 to get the correct month
 
@@ -890,8 +890,6 @@ function addToGoogleCalendar() {
                 end_min = '0'+end_min;
             }
 
-            //console.log("Summary is: ", start_end_array[k], "SH: ", start_hour, "SM: ", start_min, "EH: ",end_hour, "EM: ", end_min);
-
             var event = {'summary': start_end_array[k],
                                 'start': {'dateTime': start_date+'T'+start_hour+":"+start_min+":00", "timeZone": "America/New_York"},
                                 'end':   {'dateTime': start_date+'T'+end_hour+":"+end_min+":00", "timeZone": "America/New_York"}
@@ -906,7 +904,7 @@ function addToGoogleCalendar() {
                 appendPre('Event created: ' + event.htmlLink);
             });
 
-        }
+         }
 
     }
     else//if it is a week schedule
@@ -1002,8 +1000,24 @@ function addToGoogleCalendar() {
 
 }
 
+function append_label(name, start_hour, start_min, end_hour, end_min)
+{
+
+    var div = document.getElementById("schedule_display");
+
+    var label = document.createElement("label");
+
+    label.textContent = name + ": " + start_hour + ":" + start_min + "-" + end_hour + ":" + end_min;
+    div.appendChild(label);
+
+    var br = document.createElement("br");
+    div.appendChild(br);
+}
+
 //the main function
 function main(){
+
+    document.getElementById('schedule_display').innerHTML = "";//when you generate another schedule this is needed so the old one doesn't stay there
 
     //find whether the schedule is a day or week schedule
     day_or_week = localStorage.getItem("day_or_week");
@@ -1017,6 +1031,7 @@ function main(){
     var busy_time_array = [];//will hold all the busy events and will be passed to the algorithm
     var event_array = [];//will hold all the events and will be passed to the algorithm
 
+    var weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     //get the array of values from the busy events the user input
     //the busy count but I don't want it to get confused with the global variable busy count, used to check how many busytime we need to create
     var BC = localStorage.getItem("busy_count");
@@ -1055,28 +1070,162 @@ function main(){
 
         final_schedule = ScheduleAlgorithm(busy_time_array, event_array, start_of_day, end_of_day);
 
-        document.getElementById('day0').innerHTML = final_schedule;
+        start_end_array = [];//an array that hold the start and end times of an event as well as the name of that event
+
+        //loop through the array and look for non-0 non-Sleeping values aka events and busy events
+        for(i = 0; i < 96; i++)
+        {
+
+            if(final_schedule[i] != 0 && final_schedule[i] != 'Sleeping')
+            {
+                count = 0;
+
+                do { count++ }
+                while (final_schedule[i] == final_schedule[i+count]);
+
+                var ST = convert_min_to_hr((i)*15);//start time
+
+                var duration = convert_min_to_hr((count) * 15);//duration of the event
+
+                var ET = add_times(ST, duration);//adds the duration to the start time to find the end time
+
+                start_end_array.push(final_schedule[i], ST, ET);
+
+                i += count-1;//skip past all the spaces we checked with the while loop so we do not get duplicate events at the same time
+
+                //now we have the date and when each event starts and ends as well as its name
+                //we can make Google Calendar Events and push them to the calendar
+
+            }
+
+        }
+        for(k = 0; k < start_end_array.length; k=k+3)
+        {
+
+            var start_hour = String(start_end_array[k+1][0]);
+            var start_min  = String(start_end_array[k+1][1]);
+
+            var end_hour   = String(start_end_array[k+2][0]);
+            var end_min    = String(start_end_array[k+2][1]);
+
+            //these if statements turn the int values of hour and minutes into strings and add 0 if it a single value
+            //if the hour is 7 then it needs to be '07'
+            if(start_hour.length == 1)
+            {
+                start_hour = '0'+start_hour;
+            }
+            if(start_min.length == 1)
+            {
+                start_min = '0'+start_min;
+            }
+            if(end_hour.length == 1)
+            {
+                end_hour = '0'+end_hour
+            }
+            if(end_min.length == 1)
+            {
+                end_min = '0'+end_min;
+            }
+
+            console.log("k is ",k , "name is ", start_end_array[k]);
+
+            append_label(start_end_array[k], start_hour, start_min, end_hour, end_min)
+
+        }
 
     }
     //we are doing a week schedule
     else
     {
+        year = localStorage.getItem("year");
+        month = localStorage.getItem("month");
+        day = localStorage.getItem("day");
+
+        var d = new Date(year, month-1, day);//date treats Jan as  month 0 so it needs to be -1 to get the correct month
+
+        day_of_week = d.getDay();//what day of the week the starting date is, this is used for calculating what exact week the user's schedule is
+
         final_schedule = WeekScheduleAlgorithm(busy_time_array, event_array, start_of_day, end_of_day);
+        date_array = calculate_week(year, month, day, day_of_week);//creates the date array that is needed for adding the events on the correct days
 
-        //add the day schedules to the divs
-        document.getElementById("day0").innerHTML = final_schedule[0];
-        document.getElementById("day1").innerHTML = final_schedule[1];
-        document.getElementById("day2").innerHTML = final_schedule[2];
-        document.getElementById("day3").innerHTML = final_schedule[3];
-        document.getElementById("day4").innerHTML = final_schedule[4];
-        document.getElementById("day5").innerHTML = final_schedule[5];
-        document.getElementById("day6").innerHTML = final_schedule[6];
+        console.log(date_array);
 
+        for(p = 0; p < 7; p++) {
+
+            var div = document.getElementById("schedule_display");
+
+            var para = document.createElement('paragraph');
+
+            var D = weekdays[p];
+
+            para.setAttribute('id', D);
+            para.textContent = D;
+            div.appendChild(para);
+
+            var br = document.createElement("br");
+            div.appendChild(br);
+
+            start_end_array = [];//an array that hold the start and end times of an event as well as the name of that event
+
+            //loop through the array and look for non-0 non-Sleeping values aka events and busy events
+            for (i = 0; i < 96; i++) {
+
+                if (final_schedule[p][i] != 0 && final_schedule[p][i] != 'Sleeping') {
+
+                    var ST = convert_min_to_hr((i) * 15);//start time, returns an array[hours, minutes ]
+
+                    count = 0;
+
+                    do {
+                        count++
+                    }
+                    while (final_schedule[p][i] == final_schedule[p][i + count]);
+                    var duration = convert_min_to_hr((count) * 15);//duration of the event, returns an array [hours, minutes]
+
+                    var ET = add_times(ST, duration);//adds the duration to the start time to find the end time
+
+                    start_end_array.push(final_schedule[p][i], ST, ET);//adds the name of the event, when it starts and when it ends to the array
+
+                    i += count - 1;//skip past all the spaces we checked with the while loop so we do not get duplicate events at the same time
+
+                }
+
+            }
+
+            //now we have the date and when each event starts and ends as well as its name
+            //we can make Google Calendar Events and push them to the calendar
+            for (k = 0; k < start_end_array.length; k = k + 3) {
+
+                var start_hour = String(start_end_array[k + 1][0]);
+                var start_min = String(start_end_array[k + 1][1]);
+
+                var end_hour = String(start_end_array[k + 2][0]);
+                var end_min = String(start_end_array[k + 2][1]);
+
+                //these if statements turn the int values of hour and minutes into strings and add 0 if it a single value
+                //if the hour is 7 then it needs to be '07'
+                if (start_hour.length == 1) {
+                    start_hour = '0' + start_hour;
+                }
+                if (start_min.length == 1) {
+                    start_min = '0' + start_min;
+                }
+                if (end_hour.length == 1) {
+                    end_hour = '0' + end_hour
+                }
+                if (end_min.length == 1) {
+                    end_min = '0' + end_min;
+                }
+
+                append_label(start_end_array[k], start_hour, start_min, end_hour, end_min);
+
+            }
+        }
     }
 
 }
 
-//clears the local storage, called when the schedule page is unloaded, that way if the user don't input anything
+//clears the local storage, called when index is loaded and when the schedule page is unloaded, that way if the user don't input anything
 //it doesn't take their events and busy events from previous entries and add them
 function localStorageClear() {
     localStorage.clear();
