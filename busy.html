@@ -2,18 +2,20 @@
 
 <style>
     p {
-        background-color: #39587E;
-        color: white;
+        color: Black;
         font-size: 24px;
         text-align: center;
+        width: auto;
+        height: auto;
 
     }
-    body {background-color: #39587E}
+
+    body {background-image: url("grey-linen-texture-background.jpg")}
 
     button{
-        background-color: #39587E;
-        border: 2px solid #FFFFFF;
-        color: white;
+        background-color: #F5F5F5;
+        border: 2px solid lightgray;
+        color: black;
         text-align: center;
         padding: 15px 32px;
         font-size: 16px;
@@ -24,39 +26,50 @@
         display: block;
         margin-left: auto;
         margin-right: auto;
-        width: 200px;
+        width: auto;
+    }
+
+    .centerC{
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
     }
 
     div{
-        color: white;
+        color: black;
         font-size: 20px;
         text-align: center;
     }
 
     select{
-        color: #FFFFFF;
+        color: #000000;
         font-size: 20px;
         text-align: center;
-        background-color: #39587E;
-        height: 50px;
+        background-color: #F5F5F5;
+        height: 30px;
+        border: 2px solid lightgray;
     }
 
     input{
-        color: #FFFFFF;
-        background-color: #39587E;
-        border: 2px solid #FFFFFF;
+        color: black;
+        background-color: #F5F5F5;
+        border: 2px solid lightgray;
         font-size: 20px;
+        padding: 4px 0px;
+    }
+    label{
+        padding: 4px 0px;
     }
 
 </style>
 
 <body>
 
-<p>When are you busy?</p>
+<p><span>When are you busy?</span></p>
 
 <br>
 
-<button onclick="busy_create()" class="centerB">Create New Busy Event</button>
+<button onclick="busy_create()" class="centerB">Add an event</button>
 
 <br>
 
@@ -64,6 +77,6 @@
 
 <br>
 
-<button onclick="busy_data_collector(); window.location.href='tasks.html';" class="centerB">Submit</button>
+<button onclick="busy_data_collector(); window.location.href='tasks.html';" class="centerC">Submit</button>
 
 </body>
